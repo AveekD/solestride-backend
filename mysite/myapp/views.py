@@ -19,3 +19,18 @@ def create_user(request):
             user_serializer.save()
             return JsonResponse(user_serializer.data, status=status.HTTP_201_CREATED) 
         return JsonResponse(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# gets specific field (sex/height/weight)
+@api_view(['GET'])
+def get_field(request, field_id):
+    if request.method == 'GET':
+        user_instance = self.get_field(field_id, request.user_data.id)
+        if not user_instance:
+            return Response(
+                {"res": "Object with field id does not exists"},
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        serializer = UserSerializer(user_instance)
+        return Response(serializer.data, status = status.HTTP_200_OK)
+
