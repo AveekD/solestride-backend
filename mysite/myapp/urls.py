@@ -6,4 +6,5 @@ from django.urls import path, include
 
 urlpatterns = [
     url(r'api/user/', views.create_user),
+    url(r'api/user/', views.get_field),
 ]
