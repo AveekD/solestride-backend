@@ -8,8 +8,18 @@ from myapp.models import User
 from myapp.serializers import UserSerializer
 from rest_framework.decorators import api_view
 
+from django.contrib.auth import authenticate
+
+from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK
+)
+
 # Create your views here.
 
+# creates and stores user with headers: username, password, email, sex, height, and weight
 @api_view(['POST'])
 def create_user(request):
     if request.method == 'POST':
@@ -19,7 +29,6 @@ def create_user(request):
             user_serializer.save()
             return JsonResponse(user_serializer.data, status=status.HTTP_201_CREATED) 
         return JsonResponse(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # gets specific field (sex/height/weight)
 @api_view(['GET'])
@@ -34,3 +43,15 @@ def get_field(request, field_id):
         serializer = UserSerializer(user_instance)
         return Response(serializer.data, status = status.HTTP_200_OK)
 
+# generates token for user creation
+@api_view(['GET'])
+def generate_token(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    if username is None or password is None:
+        return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
+    user = authenticate(username, password)
+    if not user:
+        return Response({'error': 'Invalid Credentials'}, status=HTTP_404_NOT_FOUND)
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({'token': token.key}, status=HTTP_200_OK)

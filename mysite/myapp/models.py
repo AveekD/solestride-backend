@@ -1,4 +1,5 @@
 from django.db import models
+from rest_framework.authtoken.models import Token
 
 # Create your models here.
 class User(models.Model):
@@ -8,4 +9,4 @@ class User(models.Model):
     sex =  models.CharField(max_length=100)
     height = models.CharField(max_length=100)
     weight = models.CharField(max_length=100)
-
+    
