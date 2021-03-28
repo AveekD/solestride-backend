@@ -19,7 +19,14 @@ def create_user(request):
             user_serializer.save()
             return JsonResponse(user_serializer.data, status=status.HTTP_201_CREATED) 
         return JsonResponse(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-<<<<<<< HEAD
+    elif request.method == 'GET':
+        user_serializer = UserSerializer(data=request.data)
+        if user_serializer.is_valid():
+            instance, created = User.objects.update_or_create(email=serializer.validated_data.get('email', None), defaults=serializer.validated_data)
+            if not created:
+                serializer.update(instance, serializer.validated_data)
+            return response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # gets specific field (sex/height/weight)
@@ -34,14 +41,3 @@ def get_field(request, field_id):
             )
         serializer = UserSerializer(user_instance)
         return Response(serializer.data, status = status.HTTP_200_OK)
-
-=======
-    elif request.method == 'GET':
-        user_serializer = UserSerializer(data=request.data)
-        if user_serializer.is_valid():
-            instance, created = User.objects.update_or_create(email=serializer.validated_data.get('email', None), defaults=serializer.validated_data)
-            if not created:
-                serializer.update(instance, serializer.validated_data)
-            return response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> 8f36ba7... check for duplicate emails has been added
