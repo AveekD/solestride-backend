@@ -7,6 +7,7 @@ from rest_framework import status
 from myapp.models import User
 from myapp.serializers import UserSerializer
 from rest_framework.decorators import api_view
+from rest_framework.authtoken.models import Token
 
 from django.contrib.auth import authenticate
 
@@ -23,6 +24,8 @@ from rest_framework.status import (
 @api_view(['POST'])
 def create_user(request):
     if request.method == 'POST':
+        user = User.objects.create_user(request.headers["username"], request.headers["email"], request.headers["password"])
+        user.save()
         user_data = JSONParser().parse(request)
         user_serializer = UserSerializer(data=user_data)
         if user_serializer.is_valid():
@@ -48,12 +51,24 @@ def get_field(request, field_id):
 def generate_token(request):
     username = request.headers["username"]
     password = request.headers["password"]
-    print(username)
-    print(password)
     if username is None or password is None:
         return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
-    user = authenticate(username, password)
+    print(username)
+    print(password)
+    user = authenticate(username = username, password = password)
     if not user:
         return Response({'error': 'Invalid Credentials'}, status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
     return Response({'token': token.key}, status=HTTP_200_OK)
+
+
+# ## get all unread notifications
+# @api_view(['GET'])
+# def get_all_unread_notficiations():
+
+# ## delete a notficiation from the unread array
+# @api_view(['DELETE'])
+# def delete_read_notification():
+
+
+
