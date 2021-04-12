@@ -26,8 +26,9 @@ def create_user(request):
     if request.method == 'POST':
         user = User.objects.create_user(request.headers["username"], request.headers["email"], request.headers["password"])
         user.save()
-        user_data = JSONParser().parse(request)
-        user_serializer = UserSerializer(data=user_data)
+        # user_data = JSONParser().parse(request)
+        user_serializer = UserSerializer(request.headers["username"], request.headers["email"], request.headers["password"], 
+        request.headers["first_name"], request.headers["last_name"], request.headers["sex"], request.headers["height"], request.headers["weight"])
         if user_serializer.is_valid():
             user_serializer.save()
             return JsonResponse(user_serializer.data, status=status.HTTP_201_CREATED) 
