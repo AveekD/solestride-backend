@@ -3,14 +3,14 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import AbstractBaseUser, UserManager
 
 # Create your models here.
-class User(models.Model):
-    objects =  UserManager()
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
+class Person(models.Model):
+    # objects =  UserManager()
+    firstName = models.CharField(max_length=100, default='undefined')
+    lastName = models.CharField(max_length=100, default='undefined')
+    email = models.CharField(max_length=100, default='undefined')
     username = models.CharField(max_length=100, default='user')
     password = models.CharField(max_length=100, default='password')
-    sex =  models.CharField(max_length=100)
-    height = models.CharField(max_length=100)
-    weight = models.CharField(max_length=100)
+    sex =  models.CharField(max_length=100, default='undefined')
+    height = models.CharField(max_length=100, default='undefined')
+    weight = models.CharField(max_length=100, default='undefined')
     

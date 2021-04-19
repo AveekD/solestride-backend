@@ -1,9 +1,9 @@
 # serializers.py
 from rest_framework import serializers
 
-from .models import User
+from .models import Person
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class PersonSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'email', 'username', 'password', 'sex', 'height', 'weight')
+        model = Person
+        fields = ('firstName', 'lastName', 'email', 'username', 'password', 'sex', 'height', 'weight')

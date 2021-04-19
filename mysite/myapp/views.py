@@ -4,8 +4,9 @@ from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
  
-from myapp.models import User
-from myapp.serializers import UserSerializer
+from myapp.models import Person
+from django.contrib.auth.models import User
+from myapp.serializers import PersonSerializer
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
 
@@ -24,15 +25,23 @@ from rest_framework.status import (
 @api_view(['POST'])
 def create_user(request):
     if request.method == 'POST':
-        user = User.objects.create_user(request.headers["username"], request.headers["email"], request.headers["password"])
-        user.save()
-        # user_data = JSONParser().parse(request)
-        user_serializer = UserSerializer(request.headers["username"], request.headers["email"], request.headers["password"], 
-        request.headers["first_name"], request.headers["last_name"], request.headers["sex"], request.headers["height"], request.headers["weight"])
-        if user_serializer.is_valid():
-            user_serializer.save()
-            return JsonResponse(user_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        person = Person.objects.create(
+            firstName = request.headers["firstName"],
+            lastName = request.headers["lastName"],
+            email = request.headers["email"], 
+            username = request.headers["username"], 
+            password = request.headers["password"],
+            sex = request.headers["sex"],
+            height = request.headers["height"],
+            weight = request.headers["weight"],
+        )
+        person.save()
+        user = User.objects.create_user(username = request.headers["username"], email = request.headers["email"], password = request.headers["password"])
+        person_serializer = PersonSerializer(person)
+        person_serializer_validate = PersonSerializer(data=person_serializer.data)
+        if person_serializer_validate.is_valid():
+            return JsonResponse(person_serializer.data, status=status.HTTP_201_CREATED) 
+        return JsonResponse(person_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # gets specific field (sex/height/weight)
 @api_view(['GET'])
@@ -44,7 +53,7 @@ def get_field(request, field_id):
                 {"res": "Object with field id does not exists"},
                 status = status.HTTP_400_BAD_REQUEST
             )
-        serializer = UserSerializer(user_instance)
+        serializer = PersonSerializer(user_instance)
         return Response(serializer.data, status = status.HTTP_200_OK)
 
 # generates token for user creation
